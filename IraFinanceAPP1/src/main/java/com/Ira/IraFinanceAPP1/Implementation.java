@@ -4034,7 +4034,7 @@ private static final String Syatem = null;
 			String uname="'"+uname1+"'";
 			String invenmain="select item_id,version,end_date from inventory_main where user="+uname;
 			
-			 String s="insert into inventory_main(user,location,item_id,item_qty,item_blocked,reorderpoint,date_updated,last_reference,user_id_updated,start_date,end_date,version) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+			 String s="insert into inventory_main(user,location,item_id,item_qty,item_blocked,reorderpoint,date_updated,last_reference,user_id_updated,start_date,end_date,version,isactive) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 				
 				
 			    for(int i=0; i<arr.length() ; i++)
@@ -4058,7 +4058,7 @@ private static final String Syatem = null;
 								if(rs1.getString(3).equals(arr10.getString(i)))
 											itemenddate=1;
 							
-							
+							System.out.println(iditem +" "+itemversion +" "+itemenddate);
 									if(iditem==1 && itemversion==1 && itemenddate==1)
 									{
 										System.out.println("id= ver= date=");
@@ -4272,8 +4272,359 @@ private static final String Syatem = null;
 		
 		return jo.toString();
 	}
+
+
+
 	
-} 
+	
+/*27=========================get report from inventory main table by userid======================================*/	
+	
+	
+	public String inventoryReportbyUserItem(String userid1, String itemid1)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+			
+			String userid="'"+userid1+"'";
+			String itemid="'"+itemid1+"'";
+			String ver1=null;
+			JSONObject jo=new JSONObject();
+		
+			JSONArray ja=new JSONArray();
+			JSONArray ja1=new JSONArray();
+			JSONArray ja2=new JSONArray();
+			JSONArray ja3=new JSONArray();
+			JSONArray ja4=new JSONArray();
+			JSONArray ja5=new JSONArray();
+			JSONArray ja6=new JSONArray();
+			JSONArray ja7=new JSONArray();
+			JSONArray ja8=new JSONArray();
+			JSONArray ja9=new JSONArray();
+			JSONArray ja10=new JSONArray();
+			JSONArray ja11=new JSONArray();
+		
+			try
+			{
+				jo.put("user", ja);
+				jo.put("location", ja1);
+				jo.put("item_id", ja2);
+				jo.put("item_qty", ja3);
+				jo.put("item_blocked", ja4);
+				jo.put("reorderpoint", ja5);
+				jo.put("date_updated", ja6);
+				jo.put("last_reference", ja7);
+				jo.put("user_id_updated", ja8);
+				jo.put("start_date", ja9);
+				jo.put("end_date", ja10);
+				jo.put("version", ja11);
+			
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+				logger.error("In inventory report service by userid and itemid 27 error: "+e);
+			}
+		
+		
+			String ver="select max(version) from inventory_main where item_id="+itemid+ "and user="+userid+ "limit 1";
+			
+			try
+			{
+				Statement st1=con.createStatement();
+				ResultSet rs1=st1.executeQuery(ver);
+			
+				if(rs1.next()==false)
+				{
+					return jo.toString();
+				}
+				else
+				{
+					
+				   System.out.println("version");
+					ver1=rs1.getString(1);
+				
+				}
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+				logger.error("In inventory report service by userid and itemid 27 error: "+e);
+			}
+			
+			
+			String report="select *from inventory_main where user="+userid+" and item_id="+itemid+ "and version="+ver1;
+		    System.out.println("in service 27");
+			try
+			{
+				Statement st=con.createStatement();
+				ResultSet rs=st.executeQuery(report);
+			
+				if(rs.next()==false)
+				{
+					jo.put("check", "fail");
+	 				return jo.toString();
+				}
+				else
+				{
+					do
+					{
+						ja.put(rs.getString(2));
+						ja1.put(rs.getString(3));
+						ja2.put(rs.getString(4));
+						ja3.put(rs.getString(5));
+						ja4.put(rs.getString(6));
+						ja5.put(rs.getString(7));
+						ja6.put(rs.getString(8));
+						ja7.put(rs.getString(9));
+						ja8.put(rs.getString(10));
+						ja9.put(rs.getString(11));
+						ja10.put(rs.getString(12));
+						ja11.put(rs.getString(13));
+					
+					
+					}while(rs.next());
+				}
+			
+			
+			}
+			catch(Exception e)
+			{
+				logger.error("In inventory report service by userid and itemid 27 error: "+e);
+				System.out.println(e);
+			}
+		
+			return jo.toString();
+		}
+
+
+
+/*28=========================Add action manual in inventory transaction table======================================*/	
+	
+
+	public String actionManualAdd(String transactiondetail)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		int add=0;
+		String user=null;
+		String itemid=null;
+		String user1=null;
+		String itemid1=null;
+		
+		
+				JSONArray arr=null;
+				JSONArray arr1=null;
+				JSONArray arr2=null;
+				JSONArray arr3=null;
+				JSONArray arr4=null;
+				JSONArray arr5=null;
+				JSONArray arr6=null;
+				
+				
+				try
+				{
+					JSONObject obj=new JSONObject(transactiondetail);
+		
+	
+					arr = obj.getJSONArray("user");
+					arr1 = obj.getJSONArray("location");
+					arr2= obj.getJSONArray("item_id");
+					arr3 = obj.getJSONArray("action");
+					arr4 = obj.getJSONArray("qty");
+					arr5 = obj.getJSONArray("date");
+					arr6 = obj.getJSONArray("reference");
+					
+			
+			
+				}
+				catch(Exception e)
+				{
+					logger.error("In inventory transcation service 28 eroor1 :"+e);
+					System.out.println(e);
+				}
+				
+				
+				for(int i=0; i<arr.length(); i++)
+				{
+					
+					
+					try
+					{
+						user1=arr.getString(i);
+						itemid1=arr2.getString(i);
+						user="'"+user1+"'";
+						itemid="'"+itemid1+"'";
+						
+						String tdetail="select *from inventory_transaction where item_id="+itemid+ " and user="+user;
+						
+						Statement st=con.createStatement();
+						ResultSet rs=st.executeQuery(tdetail);
+						
+						if(rs.next()==false)
+						{
+							add=1;
+							System.out.println("in if");
+						}
+						else
+						{
+							System.out.println("in else");
+							String upt="update inventory_transaction set location=?,item_id=?,action=?,qty=?,date=?,reference=? where user="+user+ "and item_id="+itemid;
+							
+							PreparedStatement	ps = con.prepareStatement(upt);
+							
+							ps.setString(1, arr1.getString(i));
+							ps.setString(2, arr2.getString(i));
+							ps.setString(3, arr3.getString(i));
+							ps.setString(4, arr4.getString(i));
+							ps.setString(5, arr5.getString(i));
+							ps.setString(6, arr6.getString(i));
+							
+							ps.executeUpdate();
+							
+							
+						}
+						
+ 
+						if(add==1)
+						{
+							String addaction="insert into inventory_transaction (user,location,item_id,action,qty,date,reference) values (?,?,?,?,?,?,?)";
+							
+							PreparedStatement	ps = con.prepareStatement(addaction);
+							
+							ps.setString(1, arr.getString(i));
+							ps.setString(2, arr1.getString(i));
+							ps.setString(3, arr2.getString(i));
+							ps.setString(4, arr3.getString(i));
+							ps.setString(5, arr4.getString(i));
+							ps.setString(6, arr5.getString(i));
+							ps.setString(7, arr6.getString(i));
+							
+							ps.executeUpdate();
+							
+							
+							
+						}
+						
+					} 
+					catch (Exception e)
+					{
+						System.out.println(e);
+						logger.error("In inventory transcation service 28 eroor1 :"+e);
+					}
+					
+				}
+				System.out.println("in service 28");
+		
+		return "insert success";
+		
+	}
+
+
+
+	
+	
+	
+/*29=========================reduce action manual in inventory transaction table======================================*/
+		
+	public String actionManualReduce(String reducedetail)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+
+		String user=null;
+		String itemid=null;
+		String user1=null;
+		String itemid1=null;
+		
+					JSONArray arr=null;
+					//JSONArray arr1=null;
+					JSONArray arr2=null;
+					JSONArray arr3=null;
+					JSONArray arr4=null;
+					JSONArray arr5=null;
+					JSONArray arr6=null;
+		
+					Statement st=null;
+					ResultSet rs=null;
+					try
+					{
+							JSONObject obj=new JSONObject(reducedetail);
+
+
+							arr = obj.getJSONArray("user");
+							//arr1 = obj.getJSONArray("location");
+							arr2= obj.getJSONArray("item_id");
+							arr3 = obj.getJSONArray("action");
+							arr4 = obj.getJSONArray("qty");
+							arr5 = obj.getJSONArray("date");
+							arr6 = obj.getJSONArray("reference");
+			
+					}
+					catch(Exception e)
+					{
+						logger.error("In inventory transcation service 28 eroor1 :"+e);
+						System.out.println(e);
+					}
+		
+					
+					for(int i=0; i<arr.length(); i++)
+					{
+						
+						
+						try
+						{
+							user1=arr.getString(i);
+							itemid1=arr2.getString(i);
+							user="'"+user1+"'";
+							itemid="'"+itemid1+"'";
+							
+							String tdetail="select *from inventory_transaction where item_id="+itemid+ " and user="+user;
+							
+							 st=con.createStatement();
+							 rs=st.executeQuery(tdetail);
+							
+							if(rs.next()==false)
+							{
+								//add=1;
+								System.out.println("in if");
+								return itemid +" not found";
+							}
+							else
+							{
+								if(rs.getDouble(6)-arr4.getDouble(i)<0)
+								{
+									return "not enough qty to perform reduce opratioon";
+								}
+								System.out.println("in else");
+								String upt="update inventory_transaction set action=?,qty=?,date=?,reference=? where user="+user+ "and item_id="+itemid;
+								
+								PreparedStatement	ps = con.prepareStatement(upt);
+								
+								//ps.setString(1, arr1.getString(i));
+								//ps.setString(1, arr2.getString(i));
+								ps.setString(1, arr3.getString(i));
+								ps.setDouble(2, rs.getDouble(6)-arr4.getDouble(i));
+								ps.setString(3, arr5.getString(i));
+								ps.setString(4, arr6.getString(i));
+								
+								ps.executeUpdate();
+								
+								
+							}
+							
+						}
+						catch(Exception e)
+						{
+							System.out.println(e);
+							logger.error("In inventory transaction reduce 29 error: "+e);
+						}
+		
+	  }
+		return "reduce success";			
+    } 
+}
 
 
 

@@ -736,7 +736,51 @@ public class BusinessLogic {
 		return imp.inventoryReportbyUserid(userid);
 	
 	}
+
+
 	
+/*27=========================get report from inventory main table by userid======================================*/	
+	
+	
+	public String inventoryReportbyUserItem(String userid, String itemid)
+	{
+		
+		logger.info("In inventroy service 27 you are trying to get report by user id and itemid from inventory main table");
+		
+		Implementation imp=new Implementation();
+		
+		return imp.inventoryReportbyUserItem(userid, itemid);
+	}
+
+
+	
+/*28=========================Add action manual in inventory transaction table======================================*/	
+	
+	
+	public String actionManualAdd(String transactiondetail)
+	{
+		
+		logger.info("In inventroy transaction service 28 you are trying perform manual add action");
+		
+		Implementation imp=new Implementation();
+	  	
+		return imp.actionManualAdd(transactiondetail);
+		
+	}
+
+
+	
+	
+/*29=========================reduce action manual in inventory transaction table======================================*/
+	
+	public String actionManualReduce(String reducedetail)
+	{
+		logger.info("In inventroy transaction service 28 you are trying perform manual reduce action");
+		
+		Implementation imp=new Implementation();
+	  	
+		return imp.actionManualReduce(reducedetail);
+	}
 	
 }
 

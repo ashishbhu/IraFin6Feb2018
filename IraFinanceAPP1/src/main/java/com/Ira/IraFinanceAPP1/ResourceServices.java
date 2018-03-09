@@ -380,5 +380,44 @@ public class ResourceServices {
 				   
 			   }
 			   
-		 
+	/*27=========================get report from inventory main table by userid and itemid======================================*/	
+			   
+			   @GET
+			   @Path("inventoryreportbyitemiduserid")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String inventoryReportbyUserItem(@QueryParam("userid") String userid, @QueryParam("itemid") String itemid)
+			   {
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.inventoryReportbyUserItem(userid, itemid);
+			   }
+			   
+	/*28=========================Add action manual in inventory transaction table======================================*/	
+			   
+			   @POST
+			   @Path("actionmanualadd")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String actionManualAdd(String transactiondetail)
+			   {
+				  
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.actionManualAdd(transactiondetail);
+			   }
+	
+   /*29=========================reduce action manual in inventory transaction table======================================*/	
+			   
+			   
+			   @POST
+			   @Path("actionmanualreduce")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String actionManualReduce(String reducedetail)
+			   {
+				  
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.actionManualReduce(reducedetail);
+			   }
+			   
+			   
 }   

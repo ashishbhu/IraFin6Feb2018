@@ -685,12 +685,56 @@ public class BusinessLogic {
 	
 /*23.==================================Daily Selling Report======================================================*/	
 	
-	public String getDaillySellReport(String date1, String date2)
+	public String getDaillySellReport(String userid, String date1, String date2)
 	{
 		logger.info("In Dailly Selling Report Service: You are trying to find dailly Selling");
 		Implementation imp=new Implementation();
 		
-		   return imp.getDaillySellReport(date1,date2);
+		   return imp.getDaillySellReport(userid,date1,date2);
+	}
+
+
+	
+	
+	
+/*==================================inventory management=======================================================*/
+	   
+	/*24=========================insert  in inventory main table======================================*/
+	
+	
+	public String insertInventoryMain(String inventorydetail)
+	{
+		logger.info("In inventroy service 24 you are trying to insert in inventory main table");
+		
+		Implementation imp=new Implementation();
+		
+		return imp.insertInventoryMain(inventorydetail);
+		
+	}
+	
+	/*25=========================update  in inventory main table======================================*/
+	public String updateInventoryMain(String inventoryupdate)
+	{
+		logger.info("In inventroy service 25 you are trying to update inventory main table");
+		
+		Implementation imp=new Implementation();
+		
+		return imp.insertInventoryMain(inventoryupdate);    // its calling same service 25 which is doing both insert and update
+		
+	}
+
+
+	
+	/*26=========================get report from inventory main table by userid======================================*/
+	
+	public String inventoryReportbyUserid(String userid)
+	{
+		logger.info("In inventroy service 26 you are trying to get report by user id from inventory main table");
+		
+		Implementation imp=new Implementation();
+		
+		return imp.inventoryReportbyUserid(userid);
+	
 	}
 	
 	

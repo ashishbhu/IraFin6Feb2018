@@ -11,12 +11,12 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Properties;
-
-
-
+import java.time.LocalDate;
+import java.util.regex.Pattern;
 import java.io.File;
-import java.util.*;  
+import java.util.*;
+import java.util.Date;
+
 import javax.mail.*;  
 import javax.mail.internet.*;  
 import javax.activation.*; 
@@ -1863,7 +1863,7 @@ private static final String Syatem = null;
 								
 								iditem=1;
 							
-								if(rs1.getString(2).equals(arr10.getString(i)))
+								 if(rs1.getString(2).equals(arr10.getString(i)))
 										itemversion=1;
 								if(rs1.getString(3).equals(arr8.getString(i)))
 											itemenddate=1;
@@ -3764,28 +3764,31 @@ private static final String Syatem = null;
 			   
 /*23============================Find Dailly Selling Report by Invoice Date=======================================*/
 	
-	public String getDaillySellReport(String date1,String date2)
+	public String getDaillySellReport(String userid1, String date1,String date2)
 	{
 		DatabaseConnection db=new DatabaseConnection();
 		Connection con=db.getConnection();
+	 	
+		String userid="'"+userid1+"'";
 		
 		String newdate1="'"+date1+"'";
 		String newdate2="'"+date2+"'";
-		String invoiceLine="select item_id,item_name,sum(item_qty),sum(item_net_amount) from invoice_line where invoice_dt >="+newdate1 +"and invoice_dt<="+newdate2 +"group by item_id,item_name";
-		
-		Statement st;
-		ResultSet rs=null;
 		
 		
+		
+		
+		
+
 		   JSONObject jo=new JSONObject();
 		   
-		   JSONArray ja=new JSONArray();
+		   JSONArray ja= new JSONArray();
 		   JSONArray ja1=new JSONArray();
 		   JSONArray ja2=new JSONArray();
 		   JSONArray ja3=new JSONArray();
 		   
 
-		   try {
+		   try
+		   {
 		   jo.put("item_id", ja);
 		   jo.put("item_name", ja1);
 		   jo.put("item_qty", ja2);
@@ -3797,47 +3800,480 @@ private static final String Syatem = null;
 			   logger.error("In Get GST Details: error : "+e);
 			   System.out.println(e);
 		   }
+		
+		
+		   // Checking user is sub user or not
 		   
-		   try
-		   {
-			   st=con.createStatement();
-			   rs=st.executeQuery(invoiceLine);
-		   } 
-		   catch (SQLException e)
-		   {
-			 logger.error("In Dailly Selling Report Service: error: "+e);
-			 System.out.println(e);
-		   }
-		  
-		   try 
-		   {
+		    String childuser="select childUserName from subuser where childUserName="+userid;
+			
+		    try
+			{
+		    	Statement st2=con.createStatement();
+		    	ResultSet rs2=st2.executeQuery(childuser);
+			
+		    	if(rs2.next()==true)// means it is sub user
+		    	{
+				
+		    		String invoiceLine="select item_id,item_name,sum(item_qty),sum(item_net_amount) from invoice_line where invoice_dt >="+newdate1 +"and invoice_dt<="+newdate2 +"and  userid="+userid +"group by item_id,item_name";
+				
+				
+		    		Statement st;
+		    		ResultSet rs=null;
+				
+		    		try
+		    		{
+		    			st=con.createStatement();
+		    			rs=st.executeQuery(invoiceLine);
+		    		} 
+		    		catch (SQLException e)
+		    		{
+		    			logger.error("In Dailly Selling Report Service: error: "+e);
+		    			System.out.println(e);
+		    		}
+				  
+				   
+		    		try 
+		    		{
+		    			if(rs.next()==false)// means no selling done by sub user
+		    			{
+		    				return jo.toString();
+		    			}
+		    			else
+		    			{
+		    				do
+		    				{
+		    					ja.put(rs.getString(1));
+		    					ja1.put(rs.getString(2));
+		    					ja2.put(rs.getString(3));
+		    					ja3.put(rs.getString(4));
+		    				}while(rs.next());
+		    			}
+		    		} 
+		    		catch (Exception e)
+		    		{
+					
+					   System.out.println(e);
+					   logger.error("In daily selling report service 23 error: "+e);
+		    		}
+				   
+		    		return jo.toString();
+		    	}
+		    	else		// means it is not sub user it may be main user
+		    	{
+		    		String mainuser="select subid from registration where subid="+userid1;
+				
+		    		Statement st1=con.createStatement();
+		    		ResultSet rs1=st1.executeQuery(mainuser);
+				
+		    		if(rs1.next()==true) // means user is main user
+		    		{
+					
+					
+		    			String invoiceLine="select item_id,item_name,sum(item_qty),sum(item_net_amount) from invoice_line where invoice_dt >="+newdate1 +"and invoice_dt<="+newdate2 +"and  parent_id="+userid +"group by item_id,item_name";
+					
+					
+		    			Statement st;
+		    			ResultSet rs=null;
+						
+		    			try
+		    			{
+		    				st=con.createStatement();
+		    				rs=st.executeQuery(invoiceLine);
+		    			} 
+		    			catch (SQLException e)
+		    			{
+		    				logger.error("In Dailly Selling Report Service: error: "+e);
+		    				System.out.println(e);
+		    			}
+					  
+		    			try 
+					   	{
+					   		if(rs.next()==false) // means main user not selling any item
+					   		{
+					   			return jo.toString();
+					   		}
+					   		else // main user selling some item
+					   		{
+					   			do
+					   			{
+					   				ja.put(rs.getString(1));
+					   				ja1.put(rs.getString(2));
+					   				ja2.put(rs.getString(3));
+					   				ja3.put(rs.getString(4));
+					   			}while(rs.next());
+					   		}
+					   	} 
+					   	catch (Exception e)
+					   	{
+						
+					   		System.out.println(e);
+					   		logger.error("In daily selling report service 23 error: "+e);
+					   	}
+					}
+					else //main user not exist
+					{
+						return jo.toString();
+					}
+					
+				}
+			}
+			catch(Exception e)
+			{
+				logger.error("In daily selling report service 23 error: "+e);
+				System.out.println(e);
+			}
+				
+				
+		return jo.toString();
+	}
+
+
+	
+/*==================================inventory management=======================================================*/
+	   
+	/*24 and 25=========================insert and update in inventory main table======================================*/
+	
+
+	public String insertInventoryMain(String inventorydetail)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		int insert=0;
+		int count=0, flag=0;
+		
+		String key="select max(id) from inventory_main";
+		
+		Statement st=null;
+		ResultSet rs=null;
+		int maxid=0;
+		try
+		{
+			st=con.createStatement();
+			rs=st.executeQuery(key);
 			if(rs.next()==false)
-			   {
-				   return jo.toString();
-			   }
+			{
+				maxid=0;
+			}
+			else
+			{
+				maxid=rs.getInt(1);
+			}
+			
+			System.out.println(maxid);
+	
+		}
+		catch(SQLException e)
+		{
+			System.out.println(e);
+			logger.error("In inventory main service 24 :error1  : "+e);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+			logger.error("In inventory main service 24 :error2  : "+e);
+		}
+		finally
+		{
+			try
+			{
+			st.close();
+			rs.close();
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+				logger.error("In inventory main service 24 :error3  : "+e);
+				
+			}
+		}
+	
+		
+		JSONArray arr=null;
+		JSONArray arr1=null;
+		JSONArray arr2=null;
+		JSONArray arr3=null;
+		JSONArray arr4=null;
+		JSONArray arr5=null;
+		JSONArray arr6=null;
+		JSONArray arr7=null;
+		JSONArray arr8=null;
+		JSONArray arr9=null;
+		JSONArray arr10=null;
+		JSONArray arr11=null;
+		try
+		{
+			JSONObject obj=new JSONObject(inventorydetail);
+		
+	
+			 arr = obj.getJSONArray("user");
+			 arr1 = obj.getJSONArray("location");
+			 arr2= obj.getJSONArray("item_id");
+			 arr3 = obj.getJSONArray("item_qty");
+			 arr4 = obj.getJSONArray("item_blocked");
+			 arr5 = obj.getJSONArray("reorderpoint");
+			 arr6 = obj.getJSONArray("date_updated");
+			 arr7 = obj.getJSONArray("last_reference");
+			 arr8 = obj.getJSONArray("user_id_updated");
+			 arr9 = obj.getJSONArray("start_date");
+			 arr10 = obj.getJSONArray("end_date");
+			 arr11 = obj.getJSONArray("version");
+			
+			
+		}
+		catch(Exception e)
+		{
+			logger.error("In inventory main service 24 eroor4 :"+e);
+			System.out.println(e);
+		}
+		
+		
+		try
+		{
+			String uname1=arr.getString(0);
+			String uname="'"+uname1+"'";
+			String invenmain="select item_id,version,end_date from inventory_main where user="+uname;
+			
+			 String s="insert into inventory_main(user,location,item_id,item_qty,item_blocked,reorderpoint,date_updated,last_reference,user_id_updated,start_date,end_date,version) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+				
+				
+			    for(int i=0; i<arr.length() ; i++)
+				{
+					int iditem=0,itemversion=0,itemenddate=0;
+					
+					 
+					PreparedStatement	ps = con.prepareStatement(s);
+					Statement 	 st1=con.createStatement();
+					 ResultSet	 rs1=st1.executeQuery(invenmain);
+					
+					while(rs1.next())
+						{
+							if(rs1.getString(1).equals(arr2.getString(i)))
+							{	
+								
+								iditem=1;
+							
+								 if(rs1.getString(2).equals(arr11.getString(i)))
+										itemversion=1;
+								if(rs1.getString(3).equals(arr10.getString(i)))
+											itemenddate=1;
+							
+							
+									if(iditem==1 && itemversion==1 && itemenddate==1)
+									{
+										System.out.println("id= ver= date=");
+										break;
+									}
+							
+								
+									if((iditem==1 && itemversion!=1) || (iditem==1 && itemenddate!=1))
+			 						{
+										
+									
+								
+										String dd=arr9.getString(i);
+										String idd=arr2.getString(i);
+										String ve=arr11.getString(i);
+										String dd1="'"+dd+"'";
+										String idd1="'"+idd+"'";
+										
+										int ver1=Integer.parseInt(ve);
+										int ve1=ver1-1;
+										String ver="'"+ve1+"'";
+										
+										System.out.println(dd);
+									
+									String up="update inventory_main set end_date="+dd1 +"where item_id="+idd1 + "and version="+ver +"and isactive="+0;
+								
+									 PreparedStatement ps2 = con.prepareStatement(up);
+								
+								
+									ps2.executeUpdate();
+								    
+									count=1;
+									
+									break;
+								}
+							
+								if(iditem==1 && itemversion!=1)
+									{
+									
+									count=1;
+									
+									
+									}
+							
+							}
+					
+				}
+					
+					
+						if(count==1 || iditem==0 )
+						{
+							
+							
+							ps.setString(1,arr.getString(i));
+							ps.setString(2, arr1.getString(i));
+							ps.setString(3, arr2.getString(i));
+							ps.setString(4, arr3.getString(i));
+							ps.setString(5, arr4.getString(i));
+							ps.setString(6, arr5.getString(i));
+							ps.setString(7, arr6.getString(i));
+							ps.setString(8, arr7.getString(i));
+							ps.setString(9, arr8.getString(i));
+							ps.setString(10, arr9.getString(i));
+							ps.setString(11, arr10.getString(i));
+							ps.setString(12, arr11.getString(i));
+							ps.setInt(13, 1);
+					
+					
+							ps.executeUpdate();
+							
+							
+						}
+				
+				}
+			
+			
+			
+		}
+		catch(Exception e)
+		{
+			flag=1;
+			logger.error("In inventory service 24 error: "+e);
+			System.out.println(e);
+		}
+		
+		if(flag==1)
+		{
+			String del="delete from inventory_main where id>"+maxid;
+			
+			try
+			{
+				PreparedStatement ps3 = con.prepareStatement(del);
+			
+				ps3.executeUpdate();
+				
+				return "fail";
+			}
+			catch(SQLException e)
+			{
+				System.out.println(e);
+				logger.error("In Synch item service :error  : "+e+ "  at the time of deleting data if synch failed");
+			}
+			catch(Exception e)
+ 			{
+				System.out.println(e);
+				logger.error("In Synch item service :error  : "+e+ " at the time of deleting data if synch failed");
+			}
+			
+		}
+		
+		return "success";
+	}
+
+
+
+/*26=========================get report from inventory main table by userid======================================*/
+	
+	public String inventoryReportbyUserid(String userid)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		
+		String dd=dateFormat.format(date);
+		LocalDate date1 = LocalDate.parse(dd);
+		//System.out.println(dateFormat.format(date));
+		
+		
+		
+		//System.out.println(date1);
+		
+		JSONObject jo=new JSONObject();
+		
+		JSONArray ja=new JSONArray();
+		JSONArray ja1=new JSONArray();
+		JSONArray ja2=new JSONArray();
+		JSONArray ja3=new JSONArray();
+		JSONArray ja4=new JSONArray();
+		JSONArray ja5=new JSONArray();
+		JSONArray ja6=new JSONArray();
+		JSONArray ja7=new JSONArray();
+		JSONArray ja8=new JSONArray();
+		JSONArray ja9=new JSONArray();
+		JSONArray ja10=new JSONArray();
+		JSONArray ja11=new JSONArray();
+		
+		try
+		{
+			jo.put("user", ja);
+			jo.put("location", ja1);
+			jo.put("item_id", ja2);
+			jo.put("item_qty", ja3);
+			jo.put("item_blocked", ja4);
+			jo.put("reorderpoint", ja5);
+			jo.put("date_updated", ja6);
+			jo.put("last_reference", ja7);
+			jo.put("user_id_updated", ja8);
+			jo.put("start_date", ja9);
+			jo.put("end_date", ja10);
+			jo.put("version", ja11);
+			
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+			logger.error("In inventory report service by userid 26 error: "+e);
+		}
+		
+		
+		String report="select *from inventory_main where user="+userid+ "and end_date<=2018-03-09";
+		try
+		{
+			Statement st=con.createStatement();
+			ResultSet rs=st.executeQuery(report);
+			
+			if(rs.next()==false)
+			{
+				jo.put("check", "fail");
+				return jo.toString();
+			}
 			else
 			{
 				do
 				{
-					ja.put(rs.getString(1));
-					ja1.put(rs.getString(2));
-					ja2.put(rs.getString(3));
-					ja3.put(rs.getString(4));
+					ja.put(rs.getString(2));
+					ja1.put(rs.getString(3));
+					ja2.put(rs.getString(4));
+					ja3.put(rs.getString(5));
+					ja4.put(rs.getString(6));
+					ja5.put(rs.getString(7));
+					ja6.put(rs.getString(8));
+					ja7.put(rs.getString(9));
+					ja8.put(rs.getString(10));
+					ja9.put(rs.getString(11));
+					ja10.put(rs.getString(12));
+					ja11.put(rs.getString(13));
+					
+					
 				}while(rs.next());
 			}
-		   } 
-		   catch (SQLException e)
-		   {
 			
-		   }
+			
+		}
+		catch(Exception e)
+		{
+			logger.error("In inventory report service by userid 26 error: "+e);
+			System.out.println(e);
+		}
 		
 		return jo.toString();
-		
 	}
 	
-	
-
-}
+} 
 
 
 

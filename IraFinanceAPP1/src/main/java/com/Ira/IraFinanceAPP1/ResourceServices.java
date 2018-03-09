@@ -329,14 +329,56 @@ public class ResourceServices {
 			   @Path("dailysellingreport")
 			   @Consumes(MediaType.APPLICATION_JSON)
 	           @Produces(MediaType.APPLICATION_JSON)
-			   public String getDailySellingReport(@QueryParam("date1") String date1,@QueryParam("date2") String date2)
+			   public String getDailySellingReport(@QueryParam("userid") String userid, @QueryParam("date1") String date1,@QueryParam("date2") String date2)
 			   {
 				   System.out.println("in service 23");
 				   BusinessLogic bl=new BusinessLogic();
-				   return bl.getDaillySellReport(date1,date2);
+				   return bl.getDaillySellReport(userid,date1,date2);
 				   
 			   }
 			  
-			  
+
+/*==================================inventory management=======================================================*/
+			   
+	/*24=========================insert in inventory main table======================================*/
+			   @POST
+			   @Path("inventorymaininsert")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String insertInventoryMain(String inventorydetail)
+			   {
+				   System.out.println("24");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.insertInventoryMain(inventorydetail);
+				   
+			   }
+			   
+	/*25=========================update inventory main table======================================*/
+			   
+			   @POST
+			   @Path("inventorymainupdate")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String updateInventoryMain(String inventoryupdate)
+			   {
+				   System.out.println("25");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.updateInventoryMain(inventoryupdate);
+				   
+			   }
+			   
+			   
+	/*26=========================get report from inventory main table by userid======================================*/
+			   @GET
+			   @Path("inventoryreportbyuserid")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String inventoryReportbyUserd(@QueryParam("userid") String userid)
+			   {
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.inventoryReportbyUserid(userid);
+				   
+			   }
+			   
 		 
 }   

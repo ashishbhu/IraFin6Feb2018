@@ -775,12 +775,58 @@ public class BusinessLogic {
 	
 	public String actionManualReduce(String reducedetail)
 	{
-		logger.info("In inventroy transaction service 28 you are trying perform manual reduce action");
+		logger.info("In inventroy transaction service 29 you are trying to perform manual reduce action");
 		
 		Implementation imp=new Implementation();
 	  	
 		return imp.actionManualReduce(reducedetail);
 	}
+
+
+
+/*30=========================inventory transaction report by userid ,itemid, startdate,enddate=========================*/
+	
+	public String tranDetailbyUserItem(String userid, String itemid, String startdate, String enddate)
+	{
+		
+		logger.info("In inventroy transaction service 30 you are trying to fetch transaction report by userid,itemid,startdate,enddate");
+		
+		Implementation imp=new Implementation();
+	  	
+		return imp.tranDetailbyUserItem(userid, itemid, startdate, enddate);
+	}
+
+
+	
+	
+	
+ /*31=========================inventory transaction report by userid , startdate,enddate=========================*/
+	
+	public String tranDetailbyUser(String userid, String startdate, String enddate)
+	{
+		
+		logger.info("In inventroy transaction service 31 you are trying to fetch transaction report by userid,startdate,enddate");
+		
+		Implementation imp=new Implementation();
+	  	
+		return imp.tranDetailbyUser(userid, startdate, enddate);
+		
+	}
+
+
+	
+	
+ /*32=========================Find Shopname by UserId=========================*/
+	
+	public String findShopName(String userid)
+	{
+		logger.info("In Find Shopname Service 32 you are Trying to See shop name of user: "+userid);
+		
+		Implementation imp=new Implementation();
+	  	
+		return imp.findShopName(userid);
+	}
+	
 	
 }
 

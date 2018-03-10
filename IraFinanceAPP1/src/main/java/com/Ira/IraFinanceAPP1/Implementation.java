@@ -3939,7 +3939,7 @@ private static final String Syatem = null;
 		DatabaseConnection db=new DatabaseConnection();
 		Connection con=db.getConnection();
 		
-		int insert=0;
+		int insert=0, isexist=0;
 		int count=0, flag=0;
 		
 		String key="select max(id) from inventory_main";
@@ -3960,7 +3960,7 @@ private static final String Syatem = null;
 				maxid=rs.getInt(1);
 			}
 			
-			System.out.println(maxid);
+			//System.out.println(maxid);
 	
 		}
 		catch(SQLException e)
@@ -3998,9 +3998,10 @@ private static final String Syatem = null;
 		JSONArray arr6=null;
 		JSONArray arr7=null;
 		JSONArray arr8=null;
-		JSONArray arr9=null;
-		JSONArray arr10=null;
-		JSONArray arr11=null;
+		
+		 JSONArray res=new JSONArray();
+		 JSONObject respon=new JSONObject();
+		 ArrayList<String> li=new ArrayList<String>();
 		try
 		{
 			JSONObject obj=new JSONObject(inventorydetail);
@@ -4015,10 +4016,9 @@ private static final String Syatem = null;
 			 arr6 = obj.getJSONArray("date_updated");
 			 arr7 = obj.getJSONArray("last_reference");
 			 arr8 = obj.getJSONArray("user_id_updated");
-			 arr9 = obj.getJSONArray("start_date");
-			 arr10 = obj.getJSONArray("end_date");
-			 arr11 = obj.getJSONArray("version");
 			
+			 
+			 respon.put("itemexist", res);
 			
 		}
 		catch(Exception e)
@@ -4030,112 +4030,79 @@ private static final String Syatem = null;
 		
 		try
 		{
-			String uname1=arr.getString(0);
-			String uname="'"+uname1+"'";
-			String invenmain="select item_id,version,end_date from inventory_main where user="+uname;
 			
-			 String s="insert into inventory_main(user,location,item_id,item_qty,item_blocked,reorderpoint,date_updated,last_reference,user_id_updated,start_date,end_date,version,isactive) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			 String s="insert into inventory_main(user,location,item_id,item_qty,item_blocked,reorderpoint,date_updated,last_reference,user_id_updated) values(?,?,?,?,?,?,?,?,?)";
 				
 				
-			    for(int i=0; i<arr.length() ; i++)
+			    for(int i=0; i<arr.length(); i++)
 				{
-					int iditem=0,itemversion=0,itemenddate=0;
+			    	String uname1=arr.getString(i);
+					String uname="'"+uname1+"'";
 					
-					 
+					String item="'"+arr2.getString(i)+"'";
+					String invenmain="select item_id from inventory_main where user="+uname+ "and item_id="+item;
+					
+					
 					PreparedStatement	ps = con.prepareStatement(s);
+					
 					Statement 	 st1=con.createStatement();
-					 ResultSet	 rs1=st1.executeQuery(invenmain);
+					ResultSet	 rs1=st1.executeQuery(invenmain);
 					
-					while(rs1.next())
-						{
-							if(rs1.getString(1).equals(arr2.getString(i)))
-							{	
-								
-								iditem=1;
-							
-								 if(rs1.getString(2).equals(arr11.getString(i)))
-										itemversion=1;
-								if(rs1.getString(3).equals(arr10.getString(i)))
-											itemenddate=1;
-							
-							System.out.println(iditem +" "+itemversion +" "+itemenddate);
-									if(iditem==1 && itemversion==1 && itemenddate==1)
-									{
-										System.out.println("id= ver= date=");
-										break;
-									}
-							
-								
-									if((iditem==1 && itemversion!=1) || (iditem==1 && itemenddate!=1))
-			 						{
-										
-									
-								
-										String dd=arr9.getString(i);
-										String idd=arr2.getString(i);
-										String ve=arr11.getString(i);
-										String dd1="'"+dd+"'";
-										String idd1="'"+idd+"'";
-										
-										int ver1=Integer.parseInt(ve);
-										int ve1=ver1-1;
-										String ver="'"+ve1+"'";
-										
-										System.out.println(dd);
-									
-									String up="update inventory_main set end_date="+dd1 +"where item_id="+idd1 + "and version="+ver +"and isactive="+0;
-								
-									 PreparedStatement ps2 = con.prepareStatement(up);
-								
-								
-									ps2.executeUpdate();
-								    
-									count=1;
-									
-									break;
-								}
-							
-								if(iditem==1 && itemversion!=1)
-									{
-									
-									count=1;
-									
-									
-									}
-							
-							}
+					System.out.println("hii");
+					if(rs1.next()==false)
+					{
+						System.out.println("in if");
+						ps.setString(1,arr.getString(i));
+						ps.setString(2, arr1.getString(i));
+						ps.setString(3, arr2.getString(i));
+						ps.setString(4, arr3.getString(i));
+						ps.setString(5, arr4.getString(i));
+						ps.setString(6, arr5.getString(i));
+						ps.setString(7, arr6.getString(i));
+						ps.setString(8, arr7.getString(i));
+						ps.setString(9, arr8.getString(i));
+						
+				
+						ps.executeUpdate();
+						
+					}
+					else
+					{
 					
-				}
-					
-					
-						if(count==1 || iditem==0 )
-						{
-							
-							
-							ps.setString(1,arr.getString(i));
-							ps.setString(2, arr1.getString(i));
-							ps.setString(3, arr2.getString(i));
-							ps.setString(4, arr3.getString(i));
-							ps.setString(5, arr4.getString(i));
-							ps.setString(6, arr5.getString(i));
-							ps.setString(7, arr6.getString(i));
-							ps.setString(8, arr7.getString(i));
-							ps.setString(9, arr8.getString(i));
-							ps.setString(10, arr9.getString(i));
-							ps.setString(11, arr10.getString(i));
-							ps.setString(12, arr11.getString(i));
-							ps.setInt(13, 1);
-					
-					
-							ps.executeUpdate();
-							
-							
-						}
+						System.out.println("in else ");
+						
+						String updmain="update inventory_main set user=?,location=?,item_id=?,item_qty=?,item_blocked=?,reorderpoint=?,date_updated=?,last_reference=?,user_id_updated=? where user="+uname+ "and item_id="+item;
+						
+						PreparedStatement	ps1 = con.prepareStatement(updmain);
+						
+						ps1.setString(1,arr.getString(i));
+						ps1.setString(2, arr1.getString(i));
+						ps1.setString(3, arr2.getString(i));
+						ps1.setString(4, arr3.getString(i));
+						ps1.setString(5, arr4.getString(i));
+						ps1.setString(6, arr5.getString(i));
+						ps1.setString(7, arr6.getString(i));
+						ps1.setString(8, arr7.getString(i));
+						ps1.setString(9, arr8.getString(i));
+						
+				
+						ps1.executeUpdate();
+						//res.put(arr2.getString(i));
+						
+						isexist=1;
+						
+					}
 				
 				}
-			
-			
-			
+			    if(isexist==1)
+			    {
+			    	System.out.println("isexist");
+			    	
+			    	//System.out.println(res.length());
+			    	
+			    	//return respon.toString();
+			    }
+		
 		}
 		catch(Exception e)
 		{
@@ -4406,11 +4373,14 @@ private static final String Syatem = null;
 		DatabaseConnection db=new DatabaseConnection();
 		Connection con=db.getConnection();
 		
-		int add=0;
+		int inserterror=0;
 		String user=null;
 		String itemid=null;
 		String user1=null;
 		String itemid1=null;
+		
+		int maxidm=0;
+		int maxidtran=0;
 		
 		
 				JSONArray arr=null;
@@ -4420,6 +4390,45 @@ private static final String Syatem = null;
 				JSONArray arr4=null;
 				JSONArray arr5=null;
 				JSONArray arr6=null;
+				
+				//selecting maxid from inventory main and inventory transaction
+				
+				String maxidmain="select max(id) from inventory_main";
+				String maxidtransaction="select max(id) from inventory_transaction";
+				
+				try
+				{
+					Statement st3=con.createStatement();
+					Statement st4=con.createStatement();
+					
+					ResultSet rs3=st3.executeQuery(maxidmain);
+					ResultSet rs4=st4.executeQuery(maxidtransaction);
+					
+					if(rs3.next()==false)
+					{
+						maxidm=0;
+					}
+					else
+					{
+						maxidm=rs3.getInt(1);
+					}
+					
+					if(rs4.next()==false)
+					{
+						maxidtran=0;
+					}
+					else
+					{
+						maxidtran=rs4.getInt(1);
+					}
+					
+				}
+				catch(Exception e)
+				{
+					System.out.println(e);
+					logger.error("In inventory transcation service 28 eroor1 :"+e);
+				}
+				
 				
 				
 				try
@@ -4445,52 +4454,20 @@ private static final String Syatem = null;
 				}
 				
 				
+				String addaction="insert into inventory_transaction (user,location,item_id,action,qty,date,reference) values (?,?,?,?,?,?,?)";
+				
+				
+				try
+				{
 				for(int i=0; i<arr.length(); i++)
 				{
+					user1=arr.getString(i);
+					itemid1=arr2.getString(i);
 					
-					
-					try
-					{
-						user1=arr.getString(i);
-						itemid1=arr2.getString(i);
-						user="'"+user1+"'";
-						itemid="'"+itemid1+"'";
-						
-						String tdetail="select *from inventory_transaction where item_id="+itemid+ " and user="+user;
-						
-						Statement st=con.createStatement();
-						ResultSet rs=st.executeQuery(tdetail);
-						
-						if(rs.next()==false)
-						{
-							add=1;
-							System.out.println("in if");
-						}
-						else
-						{
-							System.out.println("in else");
-							String upt="update inventory_transaction set location=?,item_id=?,action=?,qty=?,date=?,reference=? where user="+user+ "and item_id="+itemid;
+					user="'"+user1+"'";
+					itemid="'"+itemid1+"'";
 							
-							PreparedStatement	ps = con.prepareStatement(upt);
-							
-							ps.setString(1, arr1.getString(i));
-							ps.setString(2, arr2.getString(i));
-							ps.setString(3, arr3.getString(i));
-							ps.setString(4, arr4.getString(i));
-							ps.setString(5, arr5.getString(i));
-							ps.setString(6, arr6.getString(i));
-							
-							ps.executeUpdate();
-							
-							
-						}
-						
- 
-						if(add==1)
-						{
-							String addaction="insert into inventory_transaction (user,location,item_id,action,qty,date,reference) values (?,?,?,?,?,?,?)";
-							
-							PreparedStatement	ps = con.prepareStatement(addaction);
+					PreparedStatement	ps = con.prepareStatement(addaction);
 							
 							ps.setString(1, arr.getString(i));
 							ps.setString(2, arr1.getString(i));
@@ -4504,17 +4481,84 @@ private static final String Syatem = null;
 							
 							
 							
-						}
-						
-					} 
-					catch (Exception e)
+							String invmain="select *from inventory_main where user="+user+" and item_id="+itemid;
+							
+							Statement st=con.createStatement();
+							ResultSet rs=st.executeQuery(invmain);
+							
+							if(rs.next()==false)
+							{
+								String s="insert into inventory_main(user,location,item_id,item_qty,item_blocked,reorderpoint,date_updated,last_reference,user_id_updated,start_date,end_date) values(?,?,?,?,?,?,?,?,?,?,?)";
+									
+								PreparedStatement	ps1 = con.prepareStatement(s);
+								
+								ps1.setString(1, arr.getString(i));
+								ps1.setString(2, arr1.getString(i));
+								ps1.setString(3, arr2.getString(i));
+								ps1.setString(4, arr4.getString(i));
+								ps1.setInt(5, 0);
+								ps1.setInt(6, 0);
+								ps1.setString(7, arr5.getString(i));
+								ps1.setString(8, arr6.getString(i));
+								ps1.setString(8, arr.getString(i));
+								ps1.setString(10, arr5.getString(i));
+								ps1.setString(11, "2999-12-31");
+								ps1.executeUpdate();
+								
+							}
+							else
+							{
+								String upinvmain="update inventory_main set item_qty=? where user=? and item_id=?";
+								String upmain="select item_qty from inventory_main where user="+user+ " and item_id="+itemid;
+								
+								Statement st2=con.createStatement();
+								ResultSet rs2=st2.executeQuery(upmain);
+								rs2.next();
+								Double qty=rs2.getDouble(1);
+								
+								PreparedStatement	ps2 = con.prepareStatement(upinvmain);
+								
+								ps2.setDouble(1,qty+arr4.getDouble(i));
+								
+								ps2.setString(2, arr.getString(i));
+								ps2.setString(3, arr2.getString(i));
+								
+								ps2.executeUpdate();
+								
+								
+							}
+				}
+				}catch(Exception e)
+				{
+					inserterror=1;
+					System.out.println(e);
+					logger.error("In inventory transcation service 28 eroor1 :"+e);
+				}
+				
+				if(inserterror==1) //delete item from main and transaction table if insertion fail
+				{
+					String delmain="delete from inventory_main where id>"+maxidm;
+					String deltran="delete from inventory_transaction where id>"+maxidtran;
+					
+					try
+					{
+						PreparedStatement	ps4 = con.prepareStatement(delmain);
+						PreparedStatement	ps5 = con.prepareStatement(deltran);
+					
+						ps4.executeUpdate();
+						ps5.executeUpdate();
+					}
+					catch(Exception e)
 					{
 						System.out.println(e);
 						logger.error("In inventory transcation service 28 eroor1 :"+e);
 					}
 					
+					
+					
 				}
-				System.out.println("in service 28");
+				
+				
 		
 		return "insert success";
 		
@@ -4532,19 +4576,64 @@ private static final String Syatem = null;
 		DatabaseConnection db=new DatabaseConnection();
 		Connection con=db.getConnection();
 		
-
+		int maxidm=0;
+		int maxidtran=0;
+		int add=0;
+		int inserterror=0;
+		
 		String user=null;
 		String itemid=null;
 		String user1=null;
 		String itemid1=null;
 		
 					JSONArray arr=null;
-					//JSONArray arr1=null;
+					JSONArray arr1=null;
 					JSONArray arr2=null;
 					JSONArray arr3=null;
 					JSONArray arr4=null;
 					JSONArray arr5=null;
 					JSONArray arr6=null;
+					
+					
+					//selecting maxid from inventory main and inventory transaction
+					
+					String maxidmain="select max(id) from inventory_main";
+					String maxidtransaction="select max(id) from inventory_transaction";
+					
+					try
+					{
+						Statement st3=con.createStatement();
+						Statement st4=con.createStatement();
+						
+						ResultSet rs3=st3.executeQuery(maxidmain);
+						ResultSet rs4=st4.executeQuery(maxidtransaction);
+						
+						if(rs3.next()==false)
+						{
+							maxidm=0;
+						}
+						else
+						{
+							maxidm=rs3.getInt(1);
+						}
+						
+						if(rs4.next()==false)
+						{
+							maxidtran=0;
+						}
+						else
+						{
+							maxidtran=rs4.getInt(1);
+						}
+						
+					}
+					catch(Exception e)
+					{
+						System.out.println(e);
+						logger.error("In inventory transcation service 29 eroor1 :"+e);
+					}
+					
+					
 		
 					Statement st=null;
 					ResultSet rs=null;
@@ -4554,7 +4643,7 @@ private static final String Syatem = null;
 
 
 							arr = obj.getJSONArray("user");
-							//arr1 = obj.getJSONArray("location");
+							arr1 = obj.getJSONArray("location");
 							arr2= obj.getJSONArray("item_id");
 							arr3 = obj.getJSONArray("action");
 							arr4 = obj.getJSONArray("qty");
@@ -4580,7 +4669,7 @@ private static final String Syatem = null;
 							user="'"+user1+"'";
 							itemid="'"+itemid1+"'";
 							
-							String tdetail="select *from inventory_transaction where item_id="+itemid+ " and user="+user;
+							String tdetail="select *from inventory_main where item_id="+itemid+ " and user="+user;
 							
 							 st=con.createStatement();
 							 rs=st.executeQuery(tdetail);
@@ -4593,37 +4682,332 @@ private static final String Syatem = null;
 							}
 							else
 							{
-								if(rs.getDouble(6)-arr4.getDouble(i)<0)
+								if(rs.getDouble(5)-arr4.getDouble(i)<0)
 								{
-									return "not enough qty to perform reduce opratioon";
+									return "not enough qty to perform reduce opratioon ,available qty is: "+rs.getDouble(5);
 								}
 								System.out.println("in else");
-								String upt="update inventory_transaction set action=?,qty=?,date=?,reference=? where user="+user+ "and item_id="+itemid;
+								String upt="update inventory_main set item_qty=?, date_updated=? where user="+user+ "and item_id="+itemid;
 								
 								PreparedStatement	ps = con.prepareStatement(upt);
 								
 								//ps.setString(1, arr1.getString(i));
 								//ps.setString(1, arr2.getString(i));
-								ps.setString(1, arr3.getString(i));
-								ps.setDouble(2, rs.getDouble(6)-arr4.getDouble(i));
-								ps.setString(3, arr5.getString(i));
-								ps.setString(4, arr6.getString(i));
-								
+								//ps.setString(1, arr3.getString(i));
+								ps.setDouble(1, rs.getDouble(5)-arr4.getDouble(i));
+								ps.setString(2, arr5.getString(i));
+								//ps.setString(3, arr5.getString(i));
+								//ps.setString(4, arr6.getString(i));
+								add=1;
 								ps.executeUpdate();
 								
 								
 							}
 							
+							
+							if(add==1)
+							{
+								String instran="insert into inventory_transaction (user,location,item_id,action,qty,date,reference) values (?,?,?,?,?,?,?)";
+							
+							
+								PreparedStatement	ps = con.prepareStatement(instran);
+							
+								ps.setString(1, arr.getString(i));
+								ps.setString(2, arr1.getString(i));
+								ps.setString(3, arr2.getString(i));
+								ps.setString(4, arr3.getString(i));
+								ps.setString(5, arr4.getString(i));
+								ps.setString(6, arr5.getString(i));
+								ps.setString(7, arr6.getString(i));
+							
+								ps.executeUpdate();
+							}
+							
 						}
 						catch(Exception e)
 						{
+							inserterror=1;
 							System.out.println(e);
 							logger.error("In inventory transaction reduce 29 error: "+e);
 						}
+						
+						
+						if(inserterror==1) //delete item from main and transaction table if insertion fail
+						{
+							String delmain="delete from inventory_main where id>"+maxidm;
+							String deltran="delete from inventory_transaction where id>"+maxidtran;
+							
+							try
+							{
+								PreparedStatement	ps4 = con.prepareStatement(delmain);
+								PreparedStatement	ps5 = con.prepareStatement(deltran);
+							
+								ps4.executeUpdate();
+								ps5.executeUpdate();
+							}
+							catch(Exception e)
+							{
+								System.out.println(e);
+								logger.error("In inventory transcation service 29 eroor1 :"+e);
+							}
+							
 		
-	  }
-		return "reduce success";			
-    } 
+							}
+					}
+		
+			return "reduce success";			
+					
+	}
+
+
+/*30=========================inventory transaction report by userid ,itemid, startdate,enddate=========================*/	
+	
+	
+	public String tranDetailbyUserItem(String userid, String itemid, String startdate, String enddate)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+				String user1=userid;
+				String item1=itemid;
+				String date1="'"+startdate+"'";
+				String date2="'"+enddate+"'";
+				
+				String user="'"+user1+"'";
+				String item="'"+item1+"'";
+		
+				JSONObject jo=new JSONObject();
+		
+				JSONArray ja=new JSONArray();
+				JSONArray ja1=new JSONArray();
+				JSONArray ja2=new JSONArray();
+				JSONArray ja3=new JSONArray();
+				JSONArray ja4=new JSONArray();
+				JSONArray ja5=new JSONArray();
+				JSONArray ja6=new JSONArray();
+				//JSONArray ja7=new JSONArray();
+				//JSONArray ja8=new JSONArray();
+				//JSONArray ja9=new JSONArray();
+				//JSONArray ja10=new JSONArray();
+				//JSONArray ja11=new JSONArray();
+	
+				try
+				{
+					jo.put("user", ja);
+					jo.put("location", ja1);
+					jo.put("item_id", ja2);
+					jo.put("action", ja3);
+					jo.put("qty", ja4);
+					jo.put("date", ja5);
+					jo.put("reference", ja6);
+					//jo.put("last_reference", ja7);
+					//jo.put("user_id_updated", ja8);
+					//jo.put("start_date", ja9);
+					//jo.put("end_date", ja10);
+					//jo.put("version", ja11);
+		
+				}
+				catch(Exception e)
+				{
+					System.out.println(e);
+					logger.error("In inventory report service by userid and itemid 30 error: "+e);
+				}
+	
+	
+		
+		String trandetail="select *from inventory_transaction where user="+user+ " and item_id="+item+" and date>="+date1+ " and date<="+date2;
+		
+			try
+			{
+				Statement st=con.createStatement();
+				ResultSet rs=st.executeQuery(trandetail);
+				
+				if(rs.next()==false)
+				{
+					System.out.println("if");
+					return jo.toString();
+				}
+				else
+				{
+					System.out.println("else");
+					do
+					{
+						ja.put(rs.getString(2));
+						ja1.put(rs.getString(3));
+						ja2.put(rs.getString(4));
+						ja3.put(rs.getString(5));
+						ja4.put(rs.getString(6));
+						ja5.put(rs.getString(7));
+						ja6.put(rs.getString(8));
+						
+					}while(rs.next());
+				}
+				
+				
+				
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+				logger.error("In inventroy transaction service 30 report by userid,itemid,startdate,enddate erreo: "+e);
+			}
+		
+		
+		return jo.toString();
+	}
+
+
+
+	
+/*31=========================inventory transaction report by userid , startdate,enddate=========================*/
+	
+	public String tranDetailbyUser(String userid, String startdate, String enddate)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+				//String user1=userid;
+				
+				String date1="'"+startdate+"'";
+				String date2="'"+enddate+"'";
+				
+				String user="'"+userid+"'";
+				
+		
+				JSONObject jo=new JSONObject();
+		
+				JSONArray ja=new JSONArray();
+				JSONArray ja1=new JSONArray();
+				JSONArray ja2=new JSONArray();
+				JSONArray ja3=new JSONArray();
+				JSONArray ja4=new JSONArray();
+				JSONArray ja5=new JSONArray();
+				JSONArray ja6=new JSONArray();
+				//JSONArray ja7=new JSONArray();
+				//JSONArray ja8=new JSONArray();
+				//JSONArray ja9=new JSONArray();
+				//JSONArray ja10=new JSONArray();
+				//JSONArray ja11=new JSONArray();
+	
+				try
+				{
+					jo.put("user", ja);
+					jo.put("location", ja1);
+					jo.put("item_id", ja2);
+					jo.put("action", ja3);
+					jo.put("qty", ja4);
+					jo.put("date", ja5);
+					jo.put("reference", ja6);
+					//jo.put("last_reference", ja7);
+					//jo.put("user_id_updated", ja8);
+					//jo.put("start_date", ja9);
+					//jo.put("end_date", ja10);
+					//jo.put("version", ja11);
+		
+				}
+				catch(Exception e)
+				{
+					System.out.println(e);
+					logger.error("In inventory report service by userid and itemid 31 error: "+e);
+				}
+	
+	
+		
+		String trandetail="select *from inventory_transaction where user="+user+ " and date>="+date1+ " and date<="+date2;
+		
+			try
+			{
+				Statement st=con.createStatement();
+				ResultSet rs=st.executeQuery(trandetail);
+				
+				if(rs.next()==false)
+				{
+					System.out.println("if1");
+					return jo.toString();
+				}
+				else
+				{
+					System.out.println("else");
+					do
+					{
+						ja.put(rs.getString(2));
+						ja1.put(rs.getString(3));
+						ja2.put(rs.getString(4));
+						ja3.put(rs.getString(5));
+						ja4.put(rs.getString(6));
+						ja5.put(rs.getString(7));
+						ja6.put(rs.getString(8));
+						
+					}while(rs.next());
+				}
+			
+				
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+				logger.error("In inventroy transaction service 31 report by userid,startdate,enddate erreo: "+e);
+			}
+		
+		
+		return jo.toString();
+	}
+
+
+
+	
+	
+	
+	
+/*32=========================Find Shopname by UserId=========================*/
+	
+	public String findShopName(String userid1)
+	{
+		
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		
+				String userid="'"+userid1+"'";
+				
+				String parentid=null;
+				
+				String logincon="select parentid from logincontrol where username="+userid;
+		
+				try
+				{
+					Statement st=con.createStatement();
+					ResultSet rs=st.executeQuery(logincon);
+					
+					if(rs.next()==false)
+					{
+						return "null";
+					}
+					else
+					{
+						String shopname="select shopname from registration where subid="+rs.getInt(1);
+						
+						Statement st1=con.createStatement();
+						ResultSet rs1=st1.executeQuery(shopname);
+						
+						if(rs1.next()==false)
+						{
+							return "null1";
+						}
+						else
+						{
+							return rs1.getString(1);
+						}
+					}
+				}
+				catch(Exception e)
+				{
+					System.out.println(e);
+					logger.error("In Find Shopname Service 32 error: "+e);
+				}
+		
+		return "error";
+	} 
 }
 
 

@@ -419,5 +419,47 @@ public class ResourceServices {
 				   return bl.actionManualReduce(reducedetail);
 			   }
 			   
+	/*30=========================inventory transaction report by userid ,itemid, startdate,enddate=========================*/
+			   
+			   @GET
+			   @Path("transactionreportbyuseritemid")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   //@Produces(MediaType.APPLICATION_XML)
+			   public String tranDetailbyUserItem(@QueryParam("userid") String userid,@QueryParam("itemid") String itemid,@QueryParam("startdate") String startdate,@QueryParam("enddate") String enddate)
+			   {
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.tranDetailbyUserItem(userid,itemid,startdate,enddate);
+				   
+			   }
+			   
+
+   /*31=========================inventory transaction report by userid , startdate,enddate=========================*/
+			   
+			   
+			   @GET
+			   @Path("transactionreportbyuser")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   //@Produces(MediaType.APPLICATION_XML)
+			   public String tranDetailbyUser(@QueryParam("userid") String userid,@QueryParam("startdate") String startdate,@QueryParam("enddate") String enddate)
+			   {
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.tranDetailbyUser(userid,startdate,enddate);
+				   
+			   } 
+			   
+	/*32=========================Find Shopname by UserId=========================*/	
+			   @GET
+			   @Path("findshopname")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String findShopName(@QueryParam("userid") String userid)
+			   {
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.findShopName(userid);
+			   }
+			   
+			   
 			   
 }   

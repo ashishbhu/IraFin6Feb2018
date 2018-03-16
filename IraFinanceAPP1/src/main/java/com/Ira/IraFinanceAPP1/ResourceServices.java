@@ -404,6 +404,7 @@ public class ResourceServices {
 				   BusinessLogic bl=new BusinessLogic();
 				   return bl.actionManualAdd(transactiondetail);
 			   }
+		
 	
    /*29=========================reduce action manual in inventory transaction table======================================*/	
 			   
@@ -459,7 +460,87 @@ public class ResourceServices {
 				   BusinessLogic bl=new BusinessLogic();
 				   return bl.findShopName(userid);
 			   }
+	
+   /*33=========================Add action Automated In Inventory_main and Inventory_transaction================*/	
 			   
+			   @POST
+			   @Path("addautomated")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String addAutomated(String adddetail)
+			   {
+				  
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.actionAddAutomated(adddetail);
+			   }		
+	
+    /*34========================Reduce Action Automated In Inventory_main and Inventory_transaction============*/
+		
+			   @GET
+			   @Path("reduceautomated")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String reduceAutomated(@QueryParam("userid") String userid, @QueryParam("itemid") String itemid, @QueryParam("qty") double qty)
+			   {
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.reduceAutomated(userid, itemid, qty);
+			   }
+			   
+	//============================Heirarchical user management===================================================
+			   
+	/*35.========================Create Tree with root user======================================================*/
+			
+			   @GET
+			   @Path("createtree")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String createTree(@QueryParam("rootuser") String rootuser)
+			   {
+				   
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.createTree(rootuser);
+			   }
+			   
+	/*36.========================create Child with root user ,parent and child==================================*/
+	
+			   @GET
+			   @Path("createchild")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String createChild(@QueryParam("parent") String parent,@QueryParam("child") String child )
+			   {
+				   System.out.println("36");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.createChild(parent,child);
+			   }
+	
+			   
+   /*37.========================Delete Child with Parent and Child User========================================*/
+			   
+			   @GET
+			   @Path("deletechild")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String deleteChild(@QueryParam("parent") String parent,@QueryParam("child") String child )
+			   {
+				   //System.out.println("36");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.deleteChild(parent,child);
+			   }
+			   
+	
+   /*38.========================Move Child with With parent user ,child user and new parent======================*/	
+			   
+			   @GET
+			   @Path("movechild")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces(MediaType.APPLICATION_JSON)
+			   public String moveChild(@QueryParam("parent") String parent,@QueryParam("child") String child ,@QueryParam("newparent") String newparent )
+			   {
+				   //System.out.println("36");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.moveChild(parent,child,newparent);
+			   } 
 			   
 			   
 }   

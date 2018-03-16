@@ -1,5 +1,11 @@
 package com.Ira.IraFinanceAPP1;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 //import org.eclipse.persistence.queries.ReadQuery;
 import org.json.JSONException;
@@ -826,8 +832,87 @@ public class BusinessLogic {
 	  	
 		return imp.findShopName(userid);
 	}
+
+
+ /*33=========================Add action Automated In Inventory_main and Inventory_transaction================*/	
+	   
+	   public String actionAddAutomated(String adddetail)
+	   {
+		  
+		   Implementation imp=new Implementation();
+		   return imp.actionManualAdd(adddetail);      // this is calling to service no 28
+	   }		
 	
 	
+ /*34========================Reduce Action Automated In Inventory_main and Inventory_transaction============*/	
+	
+	
+	public String reduceAutomated(String userid, String itemid, double qty)
+	{
+		logger.info("In Reduce Action Automated Service 33 you are Trying to Reduce of Itemid from user: "+userid+" and itemid:"+itemid);
+		
+		Implementation imp=new Implementation();
+	  	
+		return imp.reduceAutomated(userid, itemid, qty);
+	}
+
+
+
+//============================Heirarchical user management===================================================	
+	
+/*35.========================Create Tree with root user======================================================*/
+	
+
+	public String createTree(String rootuser)
+	{
+		logger.info("In Create tree with rootuser service 34 you are trying to create root user name: "+rootuser );
+		
+		Implementation imp=new Implementation();
+	  	
+		return imp.createTree(rootuser);
+	}
+
+
+	
+	
+/*36.========================create Child with parent and child==================================*/	
+	
+	
+	public String createChild(String parent, String child)
+	{
+		logger.info("In Create Child User service 36 you are trying to create child user with name : "+child );
+	
+		Implementation imp=new Implementation();
+  	
+		return imp.createChild(parent,child);
+	}
+
+
+		
+/*37.========================Delete Child with Parent and Child User========================================*/	
+	
+	public String deleteChild(String parent, String child)
+	{
+		logger.info("In Delete Child Service 37 You are Trying to Delete Child User :" +child+" for Parent User : "+parent );
+		
+		Implementation imp=new Implementation();
+  	
+		return imp.deleteChild(parent,child);
+	}
+
+
+	
+	
+ /*38.========================Move Child with With parent user ,child user and new parent======================*/		
+
+	public String moveChild(String parent, String child, String newparent)
+	{
+		logger.info("In Move Child Service 38 You are trying to move Child user: "+child+" to parent user: "+newparent+" from parent user: "+parent );
+		
+		Implementation imp=new Implementation();
+  	
+		return imp.moveChild(parent,child,newparent);
+	}
 }
 
 

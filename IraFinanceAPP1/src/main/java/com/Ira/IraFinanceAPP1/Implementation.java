@@ -342,6 +342,9 @@ private static final String Syatem = null;
 				int flag=0,temp=0;
 			//System.out.println("2.Login");
 	 
+				String shopname=findShopName(user); //This function is calling to service no 32 for getting Shopname
+				System.out.println("shopname is: "+shopname);
+				
 				JSONObject jo=new JSONObject();
 	 
 				
@@ -392,6 +395,7 @@ private static final String Syatem = null;
 								jo.put("forcep",  "null");
 								jo.put("access","null");
 								jo.put("email","null");
+								jo.put("shopname", "null");
 								return jo.toString(); 
 									//temp=2;
 								}
@@ -468,6 +472,7 @@ private static final String Syatem = null;
 														jo.put("forcep",rs.getString(4));
 														jo.put("access", rs.getInt(5));
 														jo.put("email",mail);
+														jo.put("shopname", shopname);
 														
 														
 														String login="update logincontrol set forcelogin=? where username=?";
@@ -495,6 +500,7 @@ private static final String Syatem = null;
 											jo.put("access","null");
 											//jo.put("akj", "arg1");
 											jo.put("email","null");
+											jo.put("shopname", "null");
 											return jo.toString();    /*---if user name incorrect------*/
 										}
 			 
@@ -506,6 +512,7 @@ private static final String Syatem = null;
 											jo.put("forcep",  "null");
 											jo.put("access","null");
 											jo.put("email","null");
+											jo.put("shopname", "null");
 			  
 											return jo.toString();  /*---------if password incorrect--------*/
 										}
@@ -566,6 +573,7 @@ private static final String Syatem = null;
 							jo.put("forcep",  "null");
 							jo.put("access","null");
 							jo.put("email","null");
+							jo.put("shopname", "null");
 							return jo.toString(); 
 					    }
 					    else
@@ -633,6 +641,7 @@ private static final String Syatem = null;
 											jo.put("forcep",rs2.getString(4));
 											jo.put("access", rs2.getInt(5));
 											jo.put("email",submailid);
+											jo.put("shopname", shopname);
 											
 											System.out.println("login");
 											String subuser1="update subuser set  forcelogin=? where childUserName=?";
@@ -667,6 +676,7 @@ private static final String Syatem = null;
 							jo.put("forcep",  "null");
 							jo.put("access","null");
 							jo.put("email","null");
+							jo.put("shopname", "null");
 							return jo.toString();   /*---if subuser id is incorrect----*/
 						}
 						
@@ -678,6 +688,7 @@ private static final String Syatem = null;
 							jo.put("forcep",  "null");
 							jo.put("access","null");
 							jo.put("email","null");
+							jo.put("shopname", "null");
 							return jo.toString();   /*----if subuser password incorrect---*/
 						}
 						
@@ -4365,7 +4376,7 @@ private static final String Syatem = null;
 
 
 
-/*28=========================Add action manual in inventory transaction table======================================*/	
+/*28 and 33==================Add action manual in inventory transaction table======================================*/	
 	
 
 	public String actionManualAdd(String transactiondetail)
@@ -4569,7 +4580,7 @@ private static final String Syatem = null;
 	
 	
 	
-/*29=========================reduce action manual in inventory transaction table======================================*/
+/*30=========================reduce action manual in inventory transaction table======================================*/
 		
 	public String actionManualReduce(String reducedetail)
 	{
@@ -4760,7 +4771,7 @@ private static final String Syatem = null;
 	}
 
 
-/*30=========================inventory transaction report by userid ,itemid, startdate,enddate=========================*/	
+/*31=========================inventory transaction report by userid ,itemid, startdate,enddate=========================*/	
 	
 	
 	public String tranDetailbyUserItem(String userid, String itemid, String startdate, String enddate)
@@ -4859,7 +4870,7 @@ private static final String Syatem = null;
 
 
 	
-/*31=========================inventory transaction report by userid , startdate,enddate=========================*/
+/*32=========================inventory transaction report by userid , startdate,enddate=========================*/
 	
 	public String tranDetailbyUser(String userid, String startdate, String enddate)
 	{
@@ -4959,9 +4970,9 @@ private static final String Syatem = null;
 	
 	
 	
-/*32=========================Find Shopname by UserId=========================*/
+/*33=========================Find Shopname by UserId=========================*/
 	
-	public String findShopName(String userid1)
+	public String findShopName(String userid1)    //This Service is called also at the time of login by service 2 so this is required at time of login also
 	{
 		
 		DatabaseConnection db=new DatabaseConnection();
@@ -4970,7 +4981,7 @@ private static final String Syatem = null;
 		
 				String userid="'"+userid1+"'";
 				
-				String parentid=null;
+				//String parentid=null;
 				
 				String logincon="select parentid from logincontrol where username="+userid;
 		
@@ -4979,7 +4990,7 @@ private static final String Syatem = null;
 					Statement st=con.createStatement();
 					ResultSet rs=st.executeQuery(logincon);
 					
-					if(rs.next()==false)
+					if(rs.next()==false)  // If user is not found in logincontrol
 					{
 						return "null";
 					}
@@ -4990,13 +5001,13 @@ private static final String Syatem = null;
 						Statement st1=con.createStatement();
 						ResultSet rs1=st1.executeQuery(shopname);
 						
-						if(rs1.next()==false)
+						if(rs1.next()==false)  //If parentId not Found
 						{
 							return "null1";
 						}
 						else
 						{
-							return rs1.getString(1);
+							return rs1.getString(1);        // This is the Shopname
 						}
 					}
 				}
@@ -5007,7 +5018,346 @@ private static final String Syatem = null;
 				}
 		
 		return "error";
-	} 
+	}
+
+
+	
+/*34========================Reduce Action Automated In Inventory_main and Inventory_transaction============*/
+	
+	public String reduceAutomated(String userid1, String itemid1, double qty)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		int flag=0;
+		
+		String userid="'"+userid1+"'";
+		String itemid="'"+itemid1+"'";
+		
+		Date date1 = new Date();
+        String strDateFormat = "yyyy-MM-dd";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String date= dateFormat.format(date1);
+		//System.out.println(date);
+        
+		//System.out.println(userid+ "and "+itemid);
+		String invmain="select *from inventory_main where user="+userid+ "and item_id="+itemid;
+		
+		try
+		{
+			Statement st=con.createStatement();
+			ResultSet rs=st.executeQuery(invmain);
+			
+			if(rs.next()==false)  //if item not found in inventory_main table
+			{
+				return "null";
+			}
+			else
+			{
+				if(rs.getDouble(5)-qty<0) // if item qty is not enough to reduce   
+				{
+					return "not allowed, available qty is:"+rs.getDouble(5);
+				}
+				else
+				{
+					String updinvmain="update inventory_main set item_qty=? where user="+userid+ "and item_id="+itemid;
+					
+					//double qt=rs.getDouble(5)-qty;
+					 //String quentity = Double.toString(qt);
+					PreparedStatement ps=con.prepareStatement(updinvmain);
+					
+						ps.setDouble(1, rs.getDouble(5)-qty);
+						ps.executeUpdate(); 
+						
+					
+						
+					String addreduce="insert into inventory_transaction (user,location,item_id,action,qty,date,reference) values (?,?,?,?,?,?,?)";
+						
+					PreparedStatement ps1=con.prepareStatement(addreduce);
+					
+					ps1.setString(1, userid1);
+					ps1.setString(2, rs.getString(3)); //Location from inv main 
+					ps1.setString(3, itemid1);
+					ps1.setString(4, "reduce");
+					ps1.setDouble(5, qty);
+					ps1.setString(6, date);
+					ps1.setString(7, rs.getString(9)); //Reference from inv main
+					
+					ps1.executeUpdate();
+					
+				}
+			}
+			
+		}
+		catch(Exception e)
+		{
+			flag=1;
+			System.out.println(e);
+			logger.error("In Reduce Action Automated Service 33 error: "+e);
+		}
+		
+		if(flag==1)
+		{
+			return "fail";
+		}
+		 return "success";
+	}
+
+
+
+//============================Heirarchical user management===================================================	
+	
+/*35.========================Create Tree with root user======================================================*/	
+	
+	
+	public String createTree(String rootuser1)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		String rootuser="'"+rootuser1+"'";
+		
+		Date date1 = new Date();
+        String strDateFormat = "yyyy-MM-dd";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String date= dateFormat.format(date1);
+		
+		String isrootuserexist="select parentuser,childuser from tree where parentuser="+rootuser+" and childuser="+rootuser;
+		
+			try
+			{
+				Statement st=con.createStatement();
+				ResultSet rs=st.executeQuery(isrootuserexist);
+				
+				if(rs.next()==false)
+				{
+					String insertrootuser="insert into tree(parentuser,childuser,datecreated,isactive) values(?,?,?,?)";
+					
+					PreparedStatement ps=con.prepareStatement(insertrootuser);
+					ps.setString(1, rootuser1);
+					ps.setString(2, rootuser1);
+					ps.setString(3, date);
+					ps.setInt(4, 1);
+					
+					ps.executeUpdate();
+				}
+				else
+				{
+					return "rootuser: "+rootuser1 +" already exist";
+				}
+			}
+			catch(Exception e)
+			{
+			
+			}
+		return "success";
+	}
+
+
+
+
+	
+/*36.========================create Child with parent and child==================================*/		
+	
+
+	public String createChild(String parent1, String child1)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		String parent="'"+parent1+"'";
+		String child="'"+child1+"'";
+		int flag=0;
+		
+		Date date1 = new Date();
+        String strDateFormat = "yyyy-MM-dd";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String date= dateFormat.format(date1);
+		
+		String selectchild="select *from tree where  parentuser="+parent+" and childuser="+child+" and isactive=1";
+		
+				try
+				{
+					Statement st=con.createStatement();
+					ResultSet rs=st.executeQuery(selectchild);
+			
+					if(rs.next()==false)
+					{
+						String insertchild="insert into tree(parentuser,childuser,datecreated,isactive)values(?,?,?,?)";
+						
+							PreparedStatement ps=con.prepareStatement(insertchild);
+							
+								ps.setString(1, parent1);
+								ps.setString(2, child1);
+								ps.setString(3, date);
+								ps.setInt(4, 1);
+								ps.executeUpdate();
+					}
+					else
+					{
+						return "child :"+child1 +" exist with parent user: "+parent1;
+					}
+			
+				}
+				catch(Exception e)
+				{
+					flag=1;
+					logger.error("In Create Child Service 36 error: "+e);
+					System.out.println(e);
+				}
+				
+				if(flag==1)
+					return "fail";
+		
+		return "success ";
+	}
+
+
+
+	
+	
+/*37.========================Delete Child with Parent and Child User========================================*/		
+	
+	public String deleteChild(String parent1, String child1) 
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		String parent="'"+parent1+"'";
+		String child="'"+child1+"'";
+		
+		Date date1 = new Date();
+        String strDateFormat = "yyyy-MM-dd";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String date= dateFormat.format(date1);
+		
+		String selectchild="select *from tree where parentuser="+parent+" and childuser="+child+" and isactive=1";
+		
+			try
+			{
+				Statement st=con.createStatement();
+				ResultSet rs=st.executeQuery(selectchild);
+				
+				if(rs.next()==false)
+				{
+					return "Child: "+child +"for parent user: "+parent+" not found";
+				}
+				else
+				{
+					String updatechild="update tree set childuser=?, isactive=? ,dateupdated=?  where parentuser="+parent+" and childuser="+child+" and isactive=?";
+					
+						PreparedStatement ps=con.prepareStatement(updatechild);
+						 
+						ps.setString(1, child1);
+						ps.setInt(2, 0);
+						ps.setString(3, date);
+						ps.setInt(4, 1);
+						ps.executeUpdate();
+						
+					//String insertchild="insert into tree(parentuser,childuser,datecreated,isactive) values(?,?,?,?)";
+					
+						//PreparedStatement ps1=con.prepareStatement(updatechild);
+							
+							//ps1.setString(1, parent1);
+							//ps1.setString(2, child1);
+							//ps1.setString(3, date);
+							//ps1.setInt(4, 1);
+							
+							//ps1.executeUpdate();
+					
+				}
+			
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+				logger.error("In Delete Child User Service 37 Error: "+e);
+			}
+		
+		
+		return "success";
+	}
+
+ /*38.========================Move Child With parent user ,child user and new parent======================*/	
+	
+	public String moveChild(String parent1, String child1, String newparent1) 
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		String parent="'"+parent1+"'";
+		String child="'"+child1+"'";
+		String newparent="'"+newparent1+"'";
+		
+		int flag=0;
+		
+		Date date1 = new Date();
+        String strDateFormat = "yyyy-MM-dd";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String date= dateFormat.format(date1);
+		
+		
+		
+		String activechild="select *from tree where parentuser="+parent+" and childuser="+child+" and isactive=1";
+		
+			try
+			{
+				Statement st=con.createStatement();
+				ResultSet rs=st.executeQuery(activechild);
+				
+				if(rs.next()==false)
+				{
+					return "Child: "+child1+" or Parent: "+parent1+" not found";
+				}
+				else
+				{
+					String selectnewparent="select *from tree where parentuser="+parent+" and childuser="+child+" and isactive=1";
+					
+					Statement st1=con.createStatement();
+					ResultSet rs1=st1.executeQuery(selectnewparent);
+					
+					if(rs1.next()==false)
+					{
+						return "newparent: "+newparent+" or child: "+child+" not found";
+					}
+					else
+					{
+						String movechild="insert into tree(parentuser,childuser,datecreated,isactive)values(?,?,?,?)";
+						
+						PreparedStatement ps=con.prepareStatement(movechild);
+						ps.setString(1, newparent1);
+						ps.setString(2, child1);
+						ps.setString(3, date);
+						ps.setInt(4, 1);
+						
+						ps.executeUpdate();
+						
+						String closechild="update tree set dateupdated=? ,isactive=? where parentuser="+parent+" and childuser="+child+" and isactive=1";
+						
+						PreparedStatement ps1=con.prepareStatement(closechild);
+						ps1.setString(1, date);
+						ps1.setInt(2, 0);
+						ps1.executeUpdate();
+					
+					}
+					
+				}
+				
+				
+			}
+			catch(Exception e)
+			{
+				flag=1;
+				System.out.println(e);
+				logger.error("In Move Child Service 38 error: "+e);
+			}
+		
+			if(flag==1)
+			{
+				return "error";
+			}
+		return "success";
+	}
+	
 }
 
 

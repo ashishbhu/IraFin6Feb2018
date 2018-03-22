@@ -5357,7 +5357,378 @@ private static final String Syatem = null;
 			}
 		return "success";
 	}
+
+
+
 	
+ /*39.========================Add Dealer Ship Code ============================================================*/
+	
+	public String addDealerCode(String user1, String dealercode1)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		String user="'"+user1+"'";
+		String dealercode="'"+dealercode1+"'";
+		//String newparent="'"+newparent1+"'";
+		
+		int flag=0;
+		
+		Date date1 = new Date();
+        String strDateFormat = "yyyy-MM-dd";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String date= dateFormat.format(date1);
+        
+        System.out.println("service 39: "+date);
+        String selectuserdealer="select *from dealershipcode where username="+user+" or dealercode="+dealercode+" and isactive=1";
+        
+        try
+        {
+        	Statement st=con.createStatement();
+        	ResultSet rs=st.executeQuery(selectuserdealer);
+        	
+        	if(rs.next()==false)
+        	{
+        		String insertdealercode="insert into dealershipcode(username,dealercode,datecreated ,isactive ) values(?,?,?,?)";
+        		
+        		PreparedStatement ps=con.prepareStatement(insertdealercode);
+        		
+        		ps.setString(1, user1);
+        		ps.setString(2, dealercode1);
+        		ps.setString(3, date);
+        		ps.setInt(4, 1);
+        		
+        		ps.executeUpdate();
+        	}
+        	else
+        	{
+        		return "user: "+user1+" or dealer code :"+dealercode1+" exist";
+        	}
+        }
+        catch(Exception e)
+        {
+        	flag=1;
+        	System.out.println(e);
+        	logger.error("In Add Dealer Code Service 39 error: "+e);
+        }
+        
+        if(flag==1)
+        	return "error";
+        
+        return "success";
+	}
+
+
+
+	
+/*40.========================Delete Dealer Ship Code ============================================================*/	
+	
+	public String deleteDealerCode(String user1, String dealercode1)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		String user="'"+user1+"'";
+		String dealercode="'"+dealercode1+"'";
+		//String newparent="'"+newparent1+"'";
+		
+		int flag=0;
+		
+		Date date1 = new Date();
+        String strDateFormat = "yyyy-MM-dd";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String date= dateFormat.format(date1);
+        
+        System.out.println("service 40: "+date);
+        
+        String selectuserdealer="select *from dealershipcode where username="+user+" and dealercode="+dealercode+" and isactive=1";
+		
+        try
+        {
+        	Statement st=con.createStatement();
+        	ResultSet rs=st.executeQuery(selectuserdealer);
+        	
+        	if(rs.next()==false)
+        	{
+        		return "user: "+user1+" or dealer code :"+dealercode1+" not exist";
+        	}
+        	else
+        	{
+        		String deletedealercode="update dealershipcode set isactive=?,dateupdated=? where username="+user+" and dealercode="+dealercode;
+        		
+        		PreparedStatement ps=con.prepareStatement(deletedealercode);
+        		
+        		ps.setInt(1, 0);
+        		ps.setString(2, date);
+        		ps.executeUpdate();
+        		
+        	}
+        	
+        }
+        catch(Exception e)
+        {
+        	flag=1;
+        	System.out.println(e);
+        	logger.error("In Add Dealer Code Service 40 error: "+e);
+        	
+        }
+        
+        if(flag==1)
+        	return "error";
+        
+        return "success";
+		
+	}
+
+
+
+	
+ /*41.========================Update Dealer Ship Code ============================================================*/	
+	
+
+	public String updateDealerCode(String user1, String olddealercode1, String newdealercode1)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		String user="'"+user1+"'";
+		String olddealercode="'"+olddealercode1+"'";
+		String newdealercode="'"+newdealercode1+"'";
+		
+		int flag=0;
+		
+		Date date1 = new Date();
+        String strDateFormat = "yyyy-MM-dd";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String date= dateFormat.format(date1);
+        
+       // System.out.println("service 41: "+date);
+        
+        String selectuserdealer="select *from dealershipcode where username="+user+" and dealercode="+olddealercode+" and isactive=1";
+		
+        try
+        {
+        	Statement st=con.createStatement();
+        	ResultSet rs=st.executeQuery(selectuserdealer);
+        	
+        	if(rs.next()==false)
+        	{
+        		//System.out.println(olddealercode1);
+        		return "userid:"+user1+" or dealer code: "+olddealercode1+" not exist";
+        	}
+        	else
+        	{
+        		if(olddealercode1.equals(newdealercode1))
+        		{
+        			return "old and new dealer code can't be same";
+        		}
+        		
+        		String updatedealercode="update dealershipcode set isactive=?,dateupdated=? where username="+user+" and dealercode="+olddealercode;
+        		
+        		PreparedStatement ps=con.prepareStatement(updatedealercode);
+        		
+        		ps.setInt(1, 0);
+        		ps.setString(2, date);
+        		
+        		
+        		String insertdealercode="insert into dealershipcode(username,dealercode,datecreated ,isactive ) values(?,?,?,?)";
+        		
+        		PreparedStatement ps1=con.prepareStatement(insertdealercode);
+        		
+        		ps1.setString(1, user1);
+        		ps1.setString(2, newdealercode1);
+        		ps1.setString(3, date);
+        		ps1.setInt(4, 1);
+        		
+        		ps.executeUpdate(); //for update query
+        		ps1.executeUpdate(); //for insert query
+        		
+        	}
+        }
+        catch(Exception e)
+        {
+        	flag=1;
+        	System.out.println(e);
+        	logger.error("In Add Dealer Code Service 41 error: "+e);
+        }
+        
+        if(flag==1)
+        	return "error";
+        
+        return "success";
+	}
+
+
+ /*42.========================Find Dealer Code by UserId ========================================================*/
+
+	public String findDealerCode(String user1)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		String user="'"+user1+"'";
+		int flag=0;
+		
+		String selectuserdealer="select *from dealershipcode where username="+user+" and isactive=1";
+		
+		try
+		{
+			Statement st=con.createStatement();
+			ResultSet rs=st.executeQuery(selectuserdealer);
+			
+			if(rs.next()==false)
+			{
+				return "User: "+user1+" not exist";
+			}
+			else
+			{
+				return "User: "+user1+" dealercode: "+rs.getString(3);
+			}
+			
+		}
+		catch(Exception e)
+		{
+			flag=1;
+			logger.error("In Find Dealer Code Service 42 error: "+e);
+		}
+		
+		if(flag==1)
+		{
+			return "error";
+		}
+		
+		return "success";
+	}
+
+
+/*43.========================Find All Child Data ============================================================*/
+	
+	public String findAllChildCode(String user1)
+	{
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		String user="'"+user1+"'";
+		int flag=0;
+		int length=0;
+		
+		JSONObject jo=new JSONObject();
+		JSONArray ja=new JSONArray();
+		JSONArray ja1=new JSONArray();
+		JSONArray ja2=new JSONArray();
+		JSONArray ja3=new JSONArray();
+		JSONArray ja4=new JSONArray();
+		JSONArray ja5=new JSONArray();
+		JSONArray ja6=new JSONArray();
+		JSONArray ja7=new JSONArray();
+		JSONArray ja8=new JSONArray();
+		JSONArray ja9=new JSONArray();
+		
+	
+		
+		try
+		{
+			jo.put("child", ja);
+			jo.put("dealercode", ja1);
+			jo.put("location", ja2);
+			jo.put("itemid", ja3);
+			jo.put("qty", ja4);
+			jo.put("itemblocked", ja5);  
+			jo.put("reorderpoint", ja6);
+			jo.put("dateupdated", ja7);
+			jo.put("lastreference", ja8);
+			jo.put("useridupdated", ja9);
+			
+			String selectchilduser="select childuser from tree where parentuser="+user+" and isactive=1";
+			
+			Statement st=con.createStatement();
+			ResultSet rs=st.executeQuery(selectchilduser);
+			
+			if(rs.next()==false)
+			{
+				return "No Child User Found";
+			}
+			else
+			{
+				do{
+						System.out.println(rs.getString(1));
+				
+						String username="'"+rs.getString(1)+"'";
+						String dealercode="select dealercode from dealershipcode where username="+username +"and isactive=1";
+				
+						Statement st1=con.createStatement();
+						ResultSet rs1=st1.executeQuery(dealercode);
+				
+						if(rs1.next()==false)
+						{
+							//System.out.println("child: "+rs.getString(1)+" dealercode: null");
+							
+							ja.put(rs.getString(1));
+							ja1.put("null");
+						}
+						else
+						{
+							//System.out.println("child: "+rs.getString(1)+" dealercode: "+rs1.getString(1));
+							
+							ja.put(rs.getString(1));
+							ja1.put(rs1.getString(1));
+						}
+				
+						String selectinventory="select user ,location ,item_id ,item_qty ,item_blocked ,reorderpoint ,date_updated ,last_reference ,user_id_updated from inventory_main where user="+username;
+				
+						Statement st2=con.createStatement();
+						ResultSet rs2=st2.executeQuery(selectinventory);
+				
+						if(rs2.next()==false)
+						{
+							//System.out.println("user: null"+", item_id: null");
+							//ja1.put("null")
+							ja2.put("null");
+							ja3.put("null");
+							ja4.put("null");
+							ja5.put("null");
+							ja6.put("null");
+							ja7.put("null");
+							ja8.put("null");
+							ja9.put("null");
+					
+					
+						}
+						else
+						{
+							do
+							{
+								//System.out.println("user: "+rs2.getString(1)+" item_id: "+rs2.getString(3));
+						
+								//ja1.put(rs1.getString(1));
+								ja2.put(rs2.getString(2));
+								ja3.put(rs2.getString(3));
+								ja4.put(rs2.getString(4));
+								ja5.put(rs2.getString(5));
+								ja6.put(rs2.getString(6));
+								ja7.put(rs2.getString(7));
+								ja8.put(rs2.getString(8));
+								ja9.put(rs2.getString(9));
+						
+							}while(rs2.next());
+					
+						}
+				
+				
+					}while(rs.next());
+				}
+			
+			
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+				logger.error("In Find All Child Data Service 43 error: "+e);
+			}
+		
+		
+		return jo.toString();
+	}
 }
 
 

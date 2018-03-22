@@ -509,7 +509,7 @@ public class ResourceServices {
 	           @Produces(MediaType.APPLICATION_JSON)
 			   public String createChild(@QueryParam("parent") String parent,@QueryParam("child") String child )
 			   {
-				   System.out.println("36");
+				   //System.out.println("36");
 				   BusinessLogic bl=new BusinessLogic();
 				   return bl.createChild(parent,child);
 			   }
@@ -520,10 +520,10 @@ public class ResourceServices {
 			   @GET
 			   @Path("deletechild")
 			   @Consumes(MediaType.APPLICATION_JSON)
-	           @Produces(MediaType.APPLICATION_JSON)
+	           @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 			   public String deleteChild(@QueryParam("parent") String parent,@QueryParam("child") String child )
 			   {
-				   //System.out.println("36");
+				   //System.out.println("37");
 				   BusinessLogic bl=new BusinessLogic();
 				   return bl.deleteChild(parent,child);
 			   }
@@ -534,13 +534,78 @@ public class ResourceServices {
 			   @GET
 			   @Path("movechild")
 			   @Consumes(MediaType.APPLICATION_JSON)
-	           @Produces(MediaType.APPLICATION_JSON)
+	           @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 			   public String moveChild(@QueryParam("parent") String parent,@QueryParam("child") String child ,@QueryParam("newparent") String newparent )
 			   {
-				   //System.out.println("36");
+				   //System.out.println("38");
 				   BusinessLogic bl=new BusinessLogic();
 				   return bl.moveChild(parent,child,newparent);
 			   } 
+
+			   
+  /*39.========================Add Dealer Ship Code ============================================================*/				   
+			
+			   @GET
+			   @Path("adddealershipcode")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+			   public String addDealerCode(@QueryParam("username") String user,@QueryParam("dealercode") String dealercode )
+			   {
+				   //System.out.println("39");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.addDealerCode(user,dealercode);
+			   } 
+			   
+ /*40.========================Delete Dealer Ship Code ============================================================*/
+			   
+			   @GET
+			   @Path("deletedealershipcode")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+			   public String deleteDealerCode(@QueryParam("username") String user,@QueryParam("dealercode") String dealercode )
+			   {
+				   //System.out.println("40");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.deleteDealerCode(user,dealercode);
+			   } 
 			   
 			   
+  /*41.========================Update Dealer Ship Code ============================================================*/
+			   
+			   @GET
+			   @Path("updatedealershipcode")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+			   public String updateDealerCode(@QueryParam("username") String user,@QueryParam("olddealercode") String olddealercode, @QueryParam("newdealercode") String newdealercode )
+			   {
+				   //System.out.println("41");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.updateDealerCode(user,olddealercode,newdealercode);
+			   } 
+			   
+  /*42.========================Find Dealer Code by UserId ============================================================*/
+			   
+			   @GET
+			   @Path("finddealercode")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+			   public String findDealerCode(@QueryParam("username") String user)
+			   {
+				   //System.out.println("42");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.findDealerCode(user);
+			   } 
+			   
+ /*43.========================Find All Child Data ============================================================*/
+			   
+			   @GET
+			   @Path("findallchild")
+			   @Consumes(MediaType.APPLICATION_JSON)
+	           @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+			   public String findAllChild(@QueryParam("username") String user)
+			   {
+				   //System.out.println("43");
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.findAllChildCode(user);
+			   } 
 }   

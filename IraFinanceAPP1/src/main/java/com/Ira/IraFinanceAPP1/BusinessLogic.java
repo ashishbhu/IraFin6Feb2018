@@ -913,6 +913,75 @@ public class BusinessLogic {
   	
 		return imp.moveChild(parent,child,newparent);
 	}
+
+
+	
+/*39.========================Add Dealer Ship Code ============================================================*/
+	
+
+	public String addDealerCode(String user, String dealercode)
+	{
+		
+		logger.info("In Add Dealer Ship Code Service 39 You are Trying to Add Dealership code: "+dealercode+" for userid: "+user);
+		
+		Implementation imp=new Implementation();
+  	
+		return imp.addDealerCode(user,dealercode);
+	}
+
+
+		
+/*40.========================Delete Dealer Ship Code ============================================================*/
+	
+	public String deleteDealerCode(String user, String dealercode)
+	{
+		logger.info("In Delete Dealer Ship Code Service 40 You are Trying to Delete Dealership code: "+dealercode+" for userid: "+user);
+		
+		Implementation imp=new Implementation();
+  	
+		return imp.deleteDealerCode(user,dealercode);
+	}
+
+
+
+/*41.========================Update Dealer Ship Code ============================================================*/	
+	
+
+	public String updateDealerCode(String user, String olddealercode, String newdealercode)
+	{
+		logger.info("In Update Dealer Ship Code Service 41 You are Trying to Update Dealership code: "+olddealercode+" to New Dealership Code: "+newdealercode +"for userid: "+user);
+		
+		Implementation imp=new Implementation();
+  	
+		return imp.updateDealerCode(user,olddealercode,newdealercode);
+	}
+
+
+	
+	
+ /*42.========================Find Dealer Code by UserId ============================================================*/
+	
+	public String findDealerCode(String user)
+	{
+		logger.info("In Find Dealer Code Service 42 You are Trying to Find Dealer Code by User: "+user);
+		
+		Implementation imp=new Implementation();
+  	
+		return imp.findDealerCode(user);
+	}
+
+
+	
+ /*43.========================Find All Child Data ============================================================*/
+	
+	public String findAllChildCode(String user)
+	{
+		logger.info("In Find All Child Service 43 You are Trying to Find All Detail of Child  User of: "+user);
+		
+		Implementation imp=new Implementation();
+  	
+		return imp.findAllChildCode(user);
+	}
 }
 
 
